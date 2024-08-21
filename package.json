@@ -4,21 +4,19 @@
   "description": "Socket server for MateUp",
   "main": "index.js",
   "scripts": {
-    "socket:start": "pm2 start node ./server/server.js --name \"socket-server\"",
-    "socket:stop": "pm2 stop socket-server",
-    "socket:log": "pm2 logs socket-server",
-    "socket:monit": "pm2 monit socket-server",
-    "socket:list": "pm2 list",
-    "socket:stop-all": "pm2 stop all",
-    "socket:delete-all": "pm2 delete all"
+    "socket:start": "forever start ./server/server.js",
+    "socket:stop": "forever stop",
+    "socket:stop-all": "forever stopall",
+    "socket:list": "forever list",
+    "socket:log": "forever logs"
   },
   "author": "JK",
   "license": "GPL-3.0",
   "dependencies": {
     "express": "^4.19.2",
+    "forever": "^4.0.3",
     "fs": "^0.0.1-security",
     "path": "^0.12.7",
-    "pm2": "^5.4.2",
     "socket.io": "^4.7.5"
   },
   "engines": {
