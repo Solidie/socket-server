@@ -22,5 +22,14 @@
   "engines": {
     "node": ">=18.8.0"
   },
-  "keywords": []
+  "keywords": [],
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sMateUp/socket-server.git"
+  },
+  "bugs": {
+    "url": "https://github.com/sMateUp/socket-server/issues"
+  },
+  "homepage": "https://github.com/sMateUp/socket-server#readme"
 }

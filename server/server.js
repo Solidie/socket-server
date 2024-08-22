@@ -34,9 +34,7 @@ io.on('connection', (socket) => {
 		socket.on('message', ({recipient_id, event, data}) => {
 			onMessage(io, recipient_id, event, data);
 		});
-	}
-
-	if (!isNaN(mateup_user_id)) {
+	} else if (!isNaN(mateup_user_id)) {
 			
 		onConnect(mateup_user_id, socket.id);
 	
@@ -44,6 +42,8 @@ io.on('connection', (socket) => {
 		socket.on('disconnect', () => {
 			onDisconnect(mateup_user_id, socket.id);
 		});
+	} else {
+		socket.disconnect(true);
 	}
 });
 
