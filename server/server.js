@@ -2,8 +2,12 @@
 const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
-const configs = require('./config.json');
 const { onConnect, onDisconnect, onMessage } = require('./user');
+
+const configs = {
+	"port": 8081,
+	"origin": ["http://10.0.2.2", "http://localhost", "http://localhost:10034", "https://mate.solidie.com"]
+}
 
 // Initialize the Express app
 const app = express();
@@ -28,6 +32,8 @@ io.on('connection', (socket) => {
 
 	const {mateup_user_id} = socket.handshake?.query || {};
 	const {token: request_id} = socket.handshake?.auth || {};
+
+	console.log('connected', socket.id);
 
 	// To Do: Verify if request ID is generated from PHP
 	if ( request_id ) {

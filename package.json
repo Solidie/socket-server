@@ -4,6 +4,7 @@
   "description": "Socket server for MateUp",
   "main": "index.js",
   "scripts": {
+    "socket": "node ./server/server.js",
     "socket:start": "forever start ./server/server.js",
     "socket:stop": "forever stop",
     "socket:stop-all": "forever stopall",
