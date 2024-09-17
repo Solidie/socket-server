@@ -2,12 +2,12 @@
 const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
-const { onConnect, onDisconnect, onMessage } = require('./user');
+const path = require('path');
 
-const configs = {
-	"port": 8081,
-	"origin": ["http://10.0.2.2", "http://localhost", "http://localhost:10034", "https://mate.solidie.com"]
-}
+const { onConnect, onDisconnect, onMessage, verifySocketConnection } = require('./user');
+
+const configs = require('dotenv').config({path: path.resolve(__dirname, '../.env')}).parsed;
+configs.CORS_ORIGIN = configs.CORS_ORIGIN.split(' ');
 
 // Initialize the Express app
 const app = express();
@@ -18,7 +18,7 @@ const server = http.createServer(app);
 // Initialize Socket.io and configure CORS options
 const io = socketIo(server, {
     cors: {
-        origin: configs.origin,
+        origin: configs.CORS_ORIGIN,
         methods: ["GET", "POST"], // Allow only these methods
         credentials: true // Allow cookies to be sent with requests
     }
@@ -30,30 +30,30 @@ app.use(express.static('public'));
 // Listen for client connections on the 'connection' event
 io.on('connection', (socket) => {
 
-	const {mateup_user_id} = socket.handshake?.query || {};
-	const {token: request_id} = socket.handshake?.auth || {};
+	const {user_id, nonce, nonce_action} = socket.handshake?.query || {};
 
-	console.log('connected', socket.id);
+	verifySocketConnection({user_id, nonce, nonce_action}, (success)=>{
 
-	// To Do: Verify if request ID is generated from PHP
-	if ( request_id ) {
+		// Disconnect socket if nonce verfication failed
+		if ( ! success ) {
+			socket.disconnect(true);
+			return;
+		}
+	
+		onConnect(user_id, socket.id);
+	
 		socket.on('message', ({recipient_id, event, data}) => {
 			onMessage(io, recipient_id, event, data);
 		});
-	} else if (!isNaN(mateup_user_id)) {
-			
-		onConnect(mateup_user_id, socket.id);
-	
+
 		// Handle client disconnect
 		socket.on('disconnect', () => {
-			onDisconnect(mateup_user_id, socket.id);
+			onDisconnect(user_id, socket.id);
 		});
-	} else {
-		socket.disconnect(true);
-	}
+	});
 });
 
 // Start the server and listen on a specified port
-server.listen(configs.port, () => {
-    console.log(`Server is running on port ${configs.port}`);
+server.listen(configs.PORT, () => {
+    console.log(`Server is running on port ${configs.PORT}`);
 });

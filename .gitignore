@@ -7,6 +7,7 @@ vendor/
 build/
 *.zip
 languages/
+.env
 
 # Cypress
 .wp-env.override.json
