@@ -30,7 +30,8 @@ app.use(express.static('public'));
 // Listen for client connections on the 'connection' event
 io.on('connection', (socket) => {
 
-	const {user_id, nonce, nonce_action} = socket.handshake?.query || {};
+	const {auth={}, query={}} = socket.handshake || {};
+	const {user_id, nonce, nonce_action} = ! auth.is_internal ? query : auth;
 
 	verifySocketConnection({user_id, nonce, nonce_action}, (success)=>{
 
@@ -39,6 +40,8 @@ io.on('connection', (socket) => {
 			socket.disconnect(true);
 			return;
 		}
+
+		io.to(socket.id).emit('connection-approved', {id: socket.id});
 	
 		onConnect(user_id, socket.id);
 	
